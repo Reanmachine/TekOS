@@ -40,8 +40,6 @@ end
 
 function face(target_orientation)
 
-	print(string.format("Turning to face %s", get_orientation_name(target_orientation)))
-
 	local rotations = (target_orientation - orientation) % 4
 	local direction = 1 -- right
 
@@ -67,7 +65,7 @@ end
 
 function move(target_orientation, target_distance)
 	print(string.format("Moving %d spaces to the %s", target_distance, get_orientation_name(target_orientation)))
-	
+
 	if orientation ~= target_orientation then face(target_orientation) end
 
 	for i = 1, target_distance do
@@ -83,15 +81,15 @@ end
 
 function move_vertical(distance)
 	if distance < 0 then
-		for z = 1, distance do
+		for z = 1, (-1 * distance) do
 			if turtle.up() then
 				increment_place_up()
 			else
 				return false
 			end
 		end
-	else
-		for z = 1, (-1 * distance) do
+	elseif distance > 0 then
+		for z = 1, distance do
 			if turtle.down() then
 				increment_place_down()
 			else
@@ -151,7 +149,9 @@ end
 
 function refuel()
 	-- if we dont need to refuel, dont
-	if turtle.getFuelLevel() == "unlimited" or turtle.getFuelLevel() > 0 then return end
+	if turtle.getFuelLevel() == "unlimited" or turtle.getFuelLevel() > 0 then 
+		return true 
+	end
 
 	local selected = turtle.getSelectedSlot()
 	turtle.select(1)
@@ -167,19 +167,37 @@ function refuel()
 	turtle.refuel(1)
 	turtle.select(selected)
 
+	return false
+
 end
 
 function dig(span_x, span_y, span_z)
-	
+
 	for z = 1, span_z do
+
+		-- Start the dig going down
+		turtle.digDown()
 
 		print("Digging level "..z)
 
 		for y = 1, span_y do
+
+			if y ~= 1 then 
+				move(orientation_north, 1)
+			else
+				print("Not advancing in Y (First Row)")
+			end
+
 			for x = 1, span_x do
-				if not turtle.refuel() then
+				if not refuel() then
 					print("Aborting Dig: Out of Fuel")
 					return
+				end
+
+				if x ~= 1 then
+					move(orientation_east, 1) 
+				else
+					print("Not advancing in X (First Block)")
 				end
 
 				turtle.digDown()
@@ -200,12 +218,10 @@ function dig(span_x, span_y, span_z)
 					face(o)
 				end
 
-				if x ~= span_x then	move(orientation_east, 1) end
 			end
 
 			-- Like a typewriter, return to base before advancing
 			move(orientation_west, span_x)
-			if y ~= span_y then move(orientation_north, 1) end
 		end
 
 		-- return to x = 0, y = 0
