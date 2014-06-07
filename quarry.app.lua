@@ -55,7 +55,7 @@ function move(target_orientation, target_distance)
 		if turtle.forward() then
 			increment_place_forward()
 		else
-			false
+			return false
 		end
 	end
 
@@ -163,7 +163,7 @@ function dig(span_x, span_y, span_z)
 				end
 
 				turtle.digDown()
-				
+
 				if not has_space() then
 					-- out of space, go offload stuff
 					local c_x = place_x
