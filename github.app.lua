@@ -59,9 +59,9 @@ function get_github_resource(project, revision, file)
 		return {found=false, code=0, data=""}
 	end
 
-	local found = web_result.getResonseCode() == 200
+	local found = web_result.getResponseCode() == 200
 
-	return {found=found, code=web_result.getResonseCode(), data=web_result.readAll()}
+	return {found=found, code=web_result.getResponseCode(), data=web_result.readAll()}
 
 end
 
@@ -114,19 +114,21 @@ end
 
 -- Application Logic
 
+local arg = { ... }
+
 if #arg < 3 then
 	print("ERROR: not enough arugments")
 	usage()
 	exit()
 end
 
-local project = arg[0]
-local asset_type = arg[1]
-local asset_name = arg[2]
+local project = arg[1]
+local asset_type = arg[2]
+local asset_name = arg[3]
 
-if asset_type == asset_type_app
+if asset_type == asset_type_app then
 	print(string.format("Downloading App '%s' from '%s'...", asset_name, project))
-elseif asset_type == asset_type_lib
+elseif asset_type == asset_type_lib then
 	print(string.format("Downloading Lib '%s' from '%s'...", asset_name, project))
 else
 	print("ERROR: invalid asset type '"..asset_type.."'")
