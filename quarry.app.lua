@@ -15,6 +15,14 @@ local orientation_west	= 3
 
 local orientation 		= orientation_north
 
+function get_orientation_name(target_orientation)
+	if target_orientation == orientation_north then return "North" end
+	if target_orientation == orientation_east  then return "East" end
+	if target_orientation == orientation_south then return "South" end
+	if target_orientation == orientation_west  then return "West" end
+	return "Unknown "..target_orientation
+end
+
 function increment_place_forward()
 	if orientation == orientation_north then place_y = place_y + 1 end
 	if orientation == orientation_east then place_x = place_x + 1 end
@@ -31,6 +39,9 @@ function increment_place_down()
 end
 
 function face(target_orientation)
+
+	print(string.format("Turning to face %s", get_orientation_name(target_orientation)))
+
 	local rotations = (target_orientation - orientation) % 4
 	local direction = 1 -- right
 
@@ -46,7 +57,7 @@ function face(target_orientation)
 		rotations,
 		direction))
 
-	for r = 1, (rotations + 1) do
+	for r = 1, rotations do
 		if direction == 1 then turtle.turnRight() end
 		if direction == -1 then turtle.turnLeft() end
 	end
@@ -55,6 +66,8 @@ function face(target_orientation)
 end
 
 function move(target_orientation, target_distance)
+	print(string.format("Moving %d spaces to the %s", target_distance, get_orientation_name(target_orientation)))
+	
 	if orientation ~= target_orientation then face(target_orientation) end
 
 	for i = 1, target_distance do
@@ -69,7 +82,7 @@ function move(target_orientation, target_distance)
 end
 
 function move_vertical(distance)
-	if distance > 0 then
+	if distance < 0 then
 		for z = 1, distance do
 			if turtle.up() then
 				increment_place_up()
@@ -166,11 +179,13 @@ function dig(span_x, span_y, span_z)
 			for x = 1, span_x do
 				if not turtle.refuel() then
 					print("Aborting Dig: Out of Fuel")
+					return
 				end
 
 				turtle.digDown()
 
 				if not has_space() then
+					print("Out of space: Unloading")
 					-- out of space, go offload stuff
 					local c_x = place_x
 					local c_y = place_y
@@ -179,6 +194,8 @@ function dig(span_x, span_y, span_z)
 
 					move_to(0, 0, 0)
 					unload_stuff()
+
+					print("Returning to place.")
 					move_to(c_x, c_y, c_z)
 					face(o)
 				end
