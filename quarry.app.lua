@@ -112,7 +112,7 @@ function move_to(target_x, target_y, target_z)
 end
 
 function has_space()
-	for i = 1, 16 do
+	for i = 2, 16 do
 		if turtle.getItemCount(i) == 0 then
 			-- Has space to expand
 			return true;
@@ -124,18 +124,46 @@ end
 
 function unload_stuff()
 	face(orientation_west)
-	for i = 1, 16 do
+	for i = 2, 16 do
 		turtle.select(i)
 		turtle.drop()
 	end
 end
 
+function refuel()
+	-- if we dont need to refuel, dont
+	if turtle.getFuelLevel() == "unlimited" or turtle.getFuelLevel() > 0 then return end
+
+	local selected = turtle.getSelectedSlot()
+	turtle.select(1)
+
+	if not turtle.refuel(0) then
+		print("Out of fuel!")
+		turtle.select(selected)
+		return false
+	end
+
+	print(string.format("Refueling: %d fuel units remain.", turtle.getItemCount(1) - 1))
+
+	turtle.refuel(1)
+	turtle.select(selected)
+
+end
+
 function dig(span_x, span_y, span_z)
 	
 	for z = 1, span_z do
+
+		print("Digging level "..z)
+
 		for y = 1, span_y do
 			for x = 1, span_x do
+				if not turtle.refuel() then
+					print("Aborting Dig: Out of Fuel")
+				end
+
 				turtle.digDown()
+				
 				if not has_space() then
 					-- out of space, go offload stuff
 					local c_x = place_x
@@ -161,6 +189,8 @@ function dig(span_x, span_y, span_z)
 		move(orientation_south, span_y)
 		move_vertical(1)
 	end
+
+	print("Dug Successfully!")
 end
 
 function usage()
