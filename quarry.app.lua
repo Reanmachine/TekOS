@@ -221,11 +221,11 @@ function dig(span_x, span_y, span_z)
 			end
 
 			-- Like a typewriter, return to base before advancing
-			move(orientation_west, span_x)
+			move(orientation_west, span_x - 1)
 		end
 
 		-- return to x = 0, y = 0
-		move(orientation_south, span_y)
+		move(orientation_south, span_y - 1)
 		move_vertical(1)
 	end
 
