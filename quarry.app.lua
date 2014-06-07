@@ -40,6 +40,12 @@ function face(target_orientation)
 		direction = -1
 	end
 
+	print(string.format("Rotation: O = %d, T = %d, R = %d, D = %d",
+		orientation,
+		target_orientation,
+		rotations,
+		direction))
+
 	for r = 1, (rotations + 1) do
 		if direction == 1 then turtle.turnRight() end
 		if direction == -1 then turtle.turnLeft() end
@@ -202,7 +208,7 @@ end
 
 local arg = { ... }
 
-if #arg != 3 then
+if #arg ~= 3 then
 	print("ERROR: too few arguments")
 	usage()
 	exit()
