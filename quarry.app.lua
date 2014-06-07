@@ -153,30 +153,22 @@ function refuel()
 		return true 
 	end
 
-	local selected = turtle.getSelectedSlot()
 	turtle.select(1)
 
 	if not turtle.refuel(0) then
 		print("Out of fuel!")
-		turtle.select(selected)
 		return false
 	end
 
 	print(string.format("Refueling: %d fuel units remain.", turtle.getItemCount(1) - 1))
 
-	turtle.refuel(1)
-	turtle.select(selected)
-
-	return false
-
+	return turtle.refuel(1)
+	
 end
 
 function dig(span_x, span_y, span_z)
 
 	for z = 1, span_z do
-
-		-- Start the dig going down
-		turtle.digDown()
 
 		print("Digging level "..z)
 
